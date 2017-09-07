@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            div {
+                height: 100px;
+                width: 200px;
+                border: 1px dashed black;
+                margin: 5px;
+            }
+            p {
+                background-color: yellow;
+                width: 180px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class = "my-target">
+            <p draggable = "true">Take me to other side</p>
+            <p draggable = "true">Take me too!</p>
+        </div>
+        <div class = "my-target"></div>
+        <div class = "my-target"></div>
+        <p draggable = "true">I don't go in there</p>
+
+        <script type="text/javascript">
+            function onDragStart(event){
+                // make a psudo ID
+                // add a charactor in front to avoid it being considered as numeric.
+                var dragID = "A"+ (new Date()).getTime();
+                // store it in the element
+                event.currentTarget.setAttribute("drag-id", dragID);
+                event.dataTransfer.setData("text", dragID);
+                // set event handlers
+                event.currentTarget.addEventListener("dragend", onDragEnd);
+                // setup drop targets except for current parent
+                var targets = document.querySelectorAll(".my-target");
+                for (var i=0; i< targets.length; i++){
+                    if (event.currentTarget !== targets[i]){
+                        targets[i].addEventListener("dragover", onDragOver);
+                        targets[i].addEventListener("drop", onDrop);
+                    }
+                }
+            }
+
+            function onDragOver(event){
+                event.preventDefault();
+            }
+
+            function onDrop(event){
+                event.preventDefault();
+                // find dragged element
+                var dragID = event.dataTransfer.getData("text");
+                var elDragged = document.querySelector("[drag-id="+dragID+"]");
+                // move it to dropped div
+                event.currentTarget.appendChild(elDragged);
+            }
+
+            function onDragEnd(event){
+                // release event handlers
+                event.currentTarget.removeEventListener("dragend", onDragEnd);
+                var targets = document.querySelectorAll(".my-target");
+                for (var i=0; i< targets.length; i++){
+                    targets[i].removeEventListener("dragover", onDragOver);
+                    targets[i].removeEventListener("drop", onDrop);
+                }
+            }
+
+            var dragItems = document.querySelectorAll(".my-target p");
+            console.log("items count", dragItems.length);
+            for (var i = 0; i < dragItems.length; i++){
+                dragItems[i].addEventListener("dragstart", onDragStart);
+            }
+        </script>
+    </body>
+</html>
