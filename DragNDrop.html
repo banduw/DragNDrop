@@ -10,7 +10,11 @@
             }
             p {
                 background-color: yellow;
+                padding: 3px;
+                border-radius: 5px;
                 width: 180px;
+                margin-right: auto;
+                text-align: center;
             }
         </style>
     </head>
@@ -26,12 +30,7 @@
 
         <script type="text/javascript">
             function onDragStart(event){
-                // make a psudo ID
-                // add a charactor in front to avoid it being considered as numeric.
-                var dragID = "A"+ (new Date()).getTime();
-                // store it in the element
-                event.currentTarget.setAttribute("drag-id", dragID);
-                event.dataTransfer.setData("text", dragID);
+                dragElement = event.currentTarget;
                 // set event handlers
                 event.currentTarget.addEventListener("dragend", onDragEnd);
                 // setup drop targets except for current parent
@@ -50,11 +49,7 @@
 
             function onDrop(event){
                 event.preventDefault();
-                // find dragged element
-                var dragID = event.dataTransfer.getData("text");
-                var elDragged = document.querySelector("[drag-id="+dragID+"]");
-                // move it to dropped div
-                event.currentTarget.appendChild(elDragged);
+                event.currentTarget.appendChild(dragElement);
             }
 
             function onDragEnd(event){
@@ -67,8 +62,8 @@
                 }
             }
 
+            var dragElement; // currently dragged element
             var dragItems = document.querySelectorAll(".my-target p");
-            console.log("items count", dragItems.length);
             for (var i = 0; i < dragItems.length; i++){
                 dragItems[i].addEventListener("dragstart", onDragStart);
             }
